@@ -74,7 +74,7 @@ def solve_model(mdl):
     print("* Production model solved with objective: {:g}".format(obj))
     print("* Total benefit=%g" % mdl.objective_value)
     for p in products:
-        print("Production of {product}: {prod_var}".format(product=p[0], prod_var=obj.produccion_vars[p].solution_value))
+        print("Production of {product}: {prod_var:.3f}".format(product=p[0], prod_var=produccion_vars[p].solution_value))
 
 # Create the model with constraints and objective
 mdl, produccion_vars, products = create_model()
