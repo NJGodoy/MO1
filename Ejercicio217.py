@@ -2,6 +2,7 @@
 import sys
 import matplotlib.pyplot as plt
 from docplex.mp.model import Model
+from docplex.util.environment import get_environment
 from docplex.mp.relax_linear import LinearRelaxer
 import itertools
 
@@ -27,7 +28,6 @@ TOTAL_EMPLOYEES = 18
 # Declaracion de las tareas
 initial_tasks = ["R", "M", "O", "N"]
 tasks_day = gen_tasks(DAYS, initial_tasks)
-
 
 # Eficiencia base por tarea
 efficiency = {"R": 15, "O": 30, "M": 35, "N": 0}
@@ -66,7 +66,7 @@ def create_model():
                      )
                     for comb in tasks_day[day] if comb[-1] == task
                 ) >= target,
-                ctname=f"Objetivo_{task}_dia_{day}"
+                ctname=f"Objetivo_{task}_dia_{day + 1}"
             )
     
     for dia in range(DAYS):  # Para cada día
@@ -96,17 +96,19 @@ def solve_model(mdl):
         print("Model cannot be solved.")
         sys.exit(1)
 
+    with get_environment().get_output_stream("solution.json") as fp:
+                mdl.solution.export(fp, "json")
+
     obj = mdl.objective_value
 
     print("* Production model solved with objective: {:g}".format(obj))
-    print("* Total salary spent=%g" % mdl.objective_value)
 
     employees_per_day = []
     lenght = 0
     for day in tasks_day:
         lenght += 1
         print(f"Day {lenght}")
-        print("-"*10)
+        print("-"*15)
         sum_day = dict()
         for p in day:
             sum_day[p[-1]] = sum_day.get(p[-1], 0) + produccion_vars[p].solution_value
@@ -133,7 +135,12 @@ def plot_employees_per_day(employees_per_day):
     for i in range(days):
         ax = axes[i]
         empleados = [employees_per_day[i].get(tarea, 0) for tarea in tasks]
-        ax.bar(tasks, empleados)
+        bars = ax.bar(tasks, empleados)
+        for bar in bars:
+            yval = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), 
+                    ha='center', va='bottom')
+
         ax.set_title(f"Day {i+1}")
         ax.set_ylabel("Number of Employees")
         ax.set_ylim(0, TOTAL_EMPLOYEES)
