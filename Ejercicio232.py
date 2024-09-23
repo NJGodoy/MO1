@@ -12,8 +12,8 @@ except:
 
 # Declaración de parámetros
 
-D1, D2, D3 = 50, 30, 30
-P1, P2, P3 = 50, 30, 20
+D1, D2, D3 = 50, 80, 70
+P1, P2, P3 = 100, 70, 50
 # nombre, precio de venta, demanda minima
 products = [("SILLAS", P1, D1),
             ("TAB4", P2, D2),
@@ -21,9 +21,9 @@ products = [("SILLAS", P1, D1),
 
 # elementos faltantes
 # nombre, precio de compra
-A = 20
-R = 40
-P = 10
+A = 40
+R = 45
+P = 20
 missing_parts_prices = (("RC1", R), ("AC1", A), ("PC1", P),
                  ("AC2", A), ("PC2", P),
                  ("AC3", A), ("PC3", P))
